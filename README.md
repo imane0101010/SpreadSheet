@@ -65,3 +65,27 @@ Now for the implementation on spreadsheet.cpp, we will create each action with i
 2.Create the action with its given icon:
 
 ``` cpp
+cut = new QAction(cutIcon, "&Cut", this);
+copy = new QAction(copyIcon, "&Copy", this);
+paste = new QAction(pasteIcon, "&Paste", this);
+save = new QAction(saveIcon, "&Save", this);
+new = new QAction(newIcon, "&NewFile", this);
+```
+3.Connect the action to it’s associated slot.
+    ``` cpp
+    connect(goCell, &QAction::triggered, this, &SpreadSheet::goCellSlot);
+   connect(find, &QAction::triggered, this, &SpreadSheet::goFindSlot);
+   //Connexion for the saveFileMenus
+   connect(save, &QAction::triggered, this, &SpreadSheet::saveSlot);
+   connect(open, &QAction::triggered, this, &SpreadSheet::openSlot);
+   connect(newFile, &QAction::triggered, this, &SpreadSheet::newSlot);
+   connect(sort, &QAction::triggered, this, &SpreadSheet::sortSlot);
+   connect(row, &QAction::triggered,this,&SpreadSheet::SelectRowSlot);
+   connect(Column,&QAction::triggered,this,&SpreadSheet::SelectColSlot);
+  connect(copy, &QAction::triggered,this,&SpreadSheet::copySlot);
+  connect(paste, &QAction::triggered,this,&SpreadSheet::pasteSlot);
+  connect(deleteAction,&QAction::triggered,this,&SpreadSheet::deleteSlot);
+  connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);
+  connect(cut,&QAction::triggered,this,&SpreadSheet::cutSlot);
+```
+###
