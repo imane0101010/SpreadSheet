@@ -544,7 +544,11 @@ QString Dialog3::cell3() const
     return line->text();
 }
 ```
-
+Making connections:
+```cpp
+ connect(ok, &QPushButton::clicked, this, &QDialog::accept);
+ connect(cancel, &QPushButton::clicked, this, &QDialog::reject);
+```
 
 
 
