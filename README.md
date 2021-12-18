@@ -420,8 +420,23 @@ In Qt each QMainWindow has a function statusBar() that return a pointer to the c
 ```cpp
 statusBar()->showMessage("Opening a new file", 2000);
   ```
-  
+## Central Widget
 
+ QMainWindow has to define a central Widget that represent its core functionality. Using polymorphism, we could put any class that inherit from QWidget. Hence the content for this slot varies from a simple widget to a complicated one with a deep hierarchy.
+
+For our SpreadSheet case, we only need a simple widget which is QTableWidget.
+
+Here the code to add in the constructor:
+```cpp
+spreadsheet = new QTableWidget;
+ spreadsheet->setRowCount(26);
+spreadsheet->setColumnCount(10);
+ setCentralWidget(spreadsheet);
+```
+## Recent Files:
+In order to add to the menu the 5 recent opened files,I proceded as follows:
+
+*  ** 
 
 
 
