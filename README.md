@@ -531,6 +531,7 @@ void Dialog3::createWidgets()
 }
 ```
 Implementation of place Widgets method
+
 ```cpp
 void Dialog3::placeWidgets()
 {
@@ -551,8 +552,9 @@ void Dialog3::placeWidgets()
        Layout->addLayout(Hlay2);
 
 }
-
+```
 Creating a getter so as to have access to the private content :
+```cpp
 QString Dialog3::cell3() const
 {
     return line->text();
@@ -568,6 +570,7 @@ Making connections:
 # Text Editor:
 For this part of the lab,we might use qt designer to fasten the creation of a basic text editor but I used code instead.
 Basically,I procedeed the same way :
+
 * **First,I created QActions:**
 ```cpp
  QAction * newFile;
@@ -672,7 +675,6 @@ void TextEditor::saveContent(QString Filename) const
 ```
 To open a file
 ```cpp
-
 QString name = QFileDialog::getOpenFileName(this,tr("Open File"),NULL, "TXT - Text file (*.txt));
 QFile file(name);
 file.open(QFile::ReadOnly | QFile::Text);
