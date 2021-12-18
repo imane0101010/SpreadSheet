@@ -602,8 +602,8 @@ QPlainTextEdit *textEditor;
     toolbar1->addAction(save);
     toolbar1->addSeparator();
     toolbar1->addAction(exit);
-    ```
-    * **Then,I connected the QActions with their slots:
+  ```
+ * **Then,I connected the QActions with their slots:**
     ```cpp
      connect(copy, &QAction::triggered,
           textEditor, &QPlainTextEdit::copy);
@@ -613,8 +613,8 @@ QPlainTextEdit *textEditor;
           textEditor, &QPlainTextEdit::cut);
   connect(save, &QAction::triggered,this,&TextEditor::saveSlot);
     connect(exit, &QAction::triggered, this, &TextEditor::close);
-```
-* ** For the Status Bar
+    ```
+  * **For the Status Bar**
 ```cpp
 connect(textEditor, SIGNAL(cursorPositionChanged()), this, SLOT(showCursorPos()));
 ```
@@ -625,6 +625,55 @@ void TextEditor::showCursorPos()
     int line = textEditor->textCursor().blockNumber()+1;
     int pos = textEditor->textCursor().columnNumber()+1;
     statusBar()->showMessage(QString("Ln %1, Col %2").arg(line).arg(pos));
+}
+```
+* **For the Save Slot**
+```cpp
+void TextEditor::saveSlot()
+{
+    //Creating a file dialog to choose a file graphically
+    auto dialog = new QFileDialog(this);
+
+    //Check if the current file has a name or not
+    if(CurrentFile == "")
+    {
+       CurrentFile = dialog->getSaveFileName( this,tr("Save File"),NULL, "TXT - Text file (*.txt));
+
+       //Update the window title with the file name
+       setWindowTitle(CurrentFile);
+    }
+
+   //If we have a name simply save the content
+   if( CurrentFile != "")
+   {
+           saveContent(CurrentFile);
+   }
+}
+```
+Implementation of saveContent:
+```cpp
+void TextEditor::saveContent(QString Filename) const
+{
+    //Gettign a pointer on the file
+       QFile file(Filename);
+       //Openign the file
+       if(file.open(QIODevice::WriteOnly))  //Opening the file in writing mode
+       {
+           //Initiating a stream using the file
+           QTextStream out(&file);
+             out<<textEditor->toPlainText();
+               }
+       file.close();
+}
+```
+To open a file
+```cpp
+
+QString name = QFileDialog::getOpenFileName(this,tr("Open File"),NULL, "TXT - Text file (*.txt));
+QFile file(name);
+file.open(QFile::ReadOnly | QFile::Text);
+QTextStream ReadFile(&file);
+textEditor->setText(ReadFile.readAll())
 }
 ```
 
