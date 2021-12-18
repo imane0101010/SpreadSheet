@@ -471,12 +471,15 @@ void SpreadSheet::updateRecentAction()
     //Returns min of 5 and size of recentFilelist
     int numRecentFiles = qMin(recentFileList.size(),5);
     for(int i=0;i<numRecentFiles;i++){
+    //Storing the file name of each file contained in recentFileList
         QString text=tr("&%1 %2").arg(i+1).arg(QFileInfo(recentFileList[i]).fileName());
+    //Add name of the file in recentFile Actions
          recentFiles[i]->setText(text);
          recentFiles[i]->setData(recentFileList[i]);
          recentFiles[i]->setVisible(true);
     }
     for(int j =numRecentFiles;j>5;j--){
+    //Keep the number of recent files lower or equals to 5
         recentFiles[j]->setVisible(false);
     }
 }
