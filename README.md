@@ -561,7 +561,70 @@ Making connections:
 ```
 ![image](https://github.com/imane0101010/SpreadSheet/blob/fbf62f506d5efb91def4ae87f12fd96efe1dcbe2/Search.png)
 
+# Text Editor:
+For this part of the lab,we might use qt designer to fasten the creation of a basic text editor but I used code instead.
+Basically,I procedeed the same way :
+* **First,I created QActions:**
+```cpp
+ QAction * newFile;
+    QAction * open;
+    QAction * save;
+    QAction * saveAs;
+    QAction * exit;
+    QAction *cut;
+    QAction *copy;
+    QAction *paste;
+    QAction *deleteAction;
+    QAction *find;
+```
+* **Then I added the central Widget:**
+```cpp
+QPlainTextEdit *textEditor;
+```
+* **I created as well QActions,added Icons,menus and tools bars.Here is a sample of what I previously did:**
+```cpp
+   QPixmap cutIcon(":/cut.png");
+   cut = new QAction(newIcon, "&Cut", this);
+   cut->setShortcut(tr("Ctrl+X"));
+   //Creating menu bar
+    FileMenu = menuBar()->addMenu("&File");
+    //Adding Actions
+    FileMenu->addAction(newFile);
+    FileMenu->addAction(open);
+    FileMenu->addAction(save);
+    FileMenu->addAction(saveAs);
+    FileMenu->addSeparator();
+    FileMenu->addAction(exit);
+    //Creating toolbar
+   auto toolbar1 = addToolBar("File");
+    //Adding Actions to toolbars
+    toolbar1->addAction(newFile);
+    toolbar1->addAction(save);
+    toolbar1->addSeparator();
+    toolbar1->addAction(exit);
+    ```
+    * **Then,I connected the QActions with their slots:
+    ```cpp
+     connect(copy, &QAction::triggered,
+          textEditor, &QPlainTextEdit::copy);
+   connect(paste, &QAction::triggered,
+          textEditor, &QPlainTextEdit::paste);
+   connect(cut, &QAction::triggered,
+          textEditor, &QPlainTextEdit::cut);
+  connect(save, &QAction::triggered,this,&TextEditor::saveSlot);
+    connect(exit, &QAction::triggered, this, &TextEditor::close);
+```
+* ** For the Status Bar
+```cpp
+connect(textEditor, SIGNAL(cursorPositionChanged()), this, SLOT(showCursorPos()));
+```
+Its slot:
+```cpp
+void TextEditor::showCursorPos()
+{
+    int line = textEditor->textCursor().blockNumber()+1;
+    int pos = textEditor->textCursor().columnNumber()+1;
+    statusBar()->showMessage(QString("Ln %1, Col %2").arg(line).arg(pos));
+}
+```
 
-
-
- 
