@@ -434,6 +434,9 @@ spreadsheet = new QTableWidget;
 spreadsheet->setColumnCount(10);
  setCentralWidget(spreadsheet);
 ```
+![image](https://github.com/imane0101010/SpreadSheet/blob/fbf62f506d5efb91def4ae87f12fd96efe1dcbe2/File.png)
+![image](https://github.com/imane0101010/SpreadSheet/blob/fbf62f506d5efb91def4ae87f12fd96efe1dcbe2/Edit.png)
+
 ## Recent Files:
 In order to add to the menu the 5 recent opened files,I proceded as follows:
 
@@ -489,6 +492,7 @@ QAction *a = qobject_cast<QAction *>(sender());
 }
 }
 ```
+![image](https://github.com/imane0101010/SpreadSheet/blob/fbf62f506d5efb91def4ae87f12fd96efe1dcbe2/TRecentFiles.png)
 ### NB:
 For the dialogs used in the previous parts , we might use qt designer to create widgets,layout and slots.Personaly,I prefer creating dialogs using code.Here is a sample:
 * **Dialog 3:**
@@ -549,7 +553,7 @@ Making connections:
  connect(ok, &QPushButton::clicked, this, &QDialog::accept);
  connect(cancel, &QPushButton::clicked, this, &QDialog::reject);
 ```
-
+![image](https://github.com/imane0101010/SpreadSheet/blob/fbf62f506d5efb91def4ae87f12fd96efe1dcbe2/Search.png)
 
 
 
