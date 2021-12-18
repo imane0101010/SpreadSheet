@@ -342,6 +342,41 @@ for (int x = 0; x < rowOfData.size(); x++)
     }
 
 ```
+Connection for Save As Action:
+```cpp
+ connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);
+ ```
+ It´s Corresponding slot:
+ ```cpp
+ 
+void SpreadSheet::SaveAsSlot()
+{
+    auto dialog = new QFileDialog;
+
+    //Check if the current file has a name or not
+
+        if(CurrentFile != ""){
+       CurrentFile = dialog->getSaveFileName();
+       //Update the window title with the file name
+       setWindowTitle(CurrentFile);
+    saveAsContent(CurrentFile);
+        }else{
+             CurrentFile = dialog->getSaveFileName(this, tr("Open File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
+              saveContent(CurrentFile);
+        }
+
+}
+
+``
+And for SaveAsContent method:
+```cpp
+void SpreadSheet::saveAsContent(QString filename)
+{
+    QFile file(filename);
+     saveContent(CurrentFile);
+   
+}
+``
 ## Menus
  Menus are a way to group actions. They could be as pull down menu in the menu bar or as a standalone context menu.
 In Qt, a menu regroup a set of predefined actions. The general approach for creating these menus in Qt is to::
