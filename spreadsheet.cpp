@@ -14,7 +14,7 @@
 #include <QProcess>
 #include <ostream>
 #include <QClipboard>
-
+#include <QSettings>
 
 
 SpreadSheet::SpreadSheet(QWidget *parent)
@@ -31,6 +31,11 @@ SpreadSheet::SpreadSheet(QWidget *parent)
     createMenus();
 
 
+
+  updateRecentAction();
+
+
+
     //Creating the tool bar
     createToolBars();
 
@@ -44,6 +49,8 @@ SpreadSheet::SpreadSheet(QWidget *parent)
     statusBar()->addPermanentWidget(cellLocation);
     statusBar()->addPermanentWidget(cellFormula);
 }
+
+
 void SpreadSheet::setupMainWidget()
 {
     spreadsheet = new QTableWidget;
@@ -102,25 +109,27 @@ void SpreadSheet::createActions()
    open = new QAction("&Open", this);
    open->setShortcut(tr("Ctrl+O"));
 
-    // --------- open file -------------------
-   save = new QAction("&Save", this);
+    // --------- Save file -------------------
+   QPixmap saveIcon(":/save_file.png");
+   save = new QAction(saveIcon,"&Save", this);
    save->setShortcut(tr("Ctrl+S"));
 
-    // --------- open file -------------------
+    // --------- Save As file -------------------
    saveAs = new QAction("save &As", this);
+    saveAs->setShortcut(tr("F12"));
 
-
-    // --------- open file -------------------
-   QPixmap cutIcon(":/cut_icon.png");
-   cut = new QAction(newIcon, "Cu&t", this);
+    // --------- Cut file -------------------
+   QPixmap cutIcon(":/cut.png");
+   cut = new QAction(cutIcon, "&Cut", this);
    cut->setShortcut(tr("Ctrl+X"));
 
-   // --------- Cut menu -----------------
-   copy = new QAction( "&Copy", this);
+   // --------- Copy menu -----------------
+   QPixmap copyIcon(":/copy.png");
+   copy = new QAction(copyIcon,"&Copy", this);
    copy->setShortcut(tr("Ctrl+C"));
 
-
-   paste = new QAction( "&Paste", this);
+    QPixmap pasteIcon(":/paste.png");
+   paste = new QAction(pasteIcon,"&Paste", this);
    paste->setShortcut(tr("Ctrl+V"));
 
 
@@ -164,6 +173,7 @@ void SpreadSheet::createActions()
    QPixmap exitIcon(":/quit_icon.png");
    exit = new QAction(exitIcon,"&Exit", this);
    exit->setShortcut(tr("Ctrl+Q"));
+
 }
 
 void SpreadSheet::close()
@@ -199,28 +209,25 @@ void SpreadSheet::createMenus()
     select->addAction(Column);
     select->addAction(all);
 
-    //auto recentFiles = editMenu->addMenu("&Recent Files");
 
-     //recentFiles->addAction(RecentFile[0]);
-    // recentFiles->addAction(RecentFile[1]);
-     /*recentFiles->addAction(RecentFile[2]);
-     recentFiles->addAction(RecentFile[3]);
-     recentFiles->addAction(RecentFile[4]);
-     recentFiles->addSeparator();
-     */
-    // recentFiles->addAction(clearAll);
+     auto  recentFile = editMenu->addMenu("&Recent Files");
+     for(auto i =0 ;i<5;i++){
+         recentFiles[i] =new QAction(this);
+         recentFiles[i]->setVisible(true);
+         recentFile->addAction(recentFiles[i]);
+         QObject::connect(recentFiles[i],SIGNAL(triggered()),this,SLOT(RecentFilesSlot()));
+
+         updateRecentAction();
+
+     }
+
     editMenu->addAction(find);
     editMenu->addAction(goCell);
-
-
 
     //-------------- Toosl menu ------------
     toolsMenu = menuBar()->addMenu("&Tools");
     toolsMenu->addAction(recalculate);
     toolsMenu->addAction(sort);
-
-
-
     //Optins menus
     optionsMenu = menuBar()->addMenu("&Options");
     optionsMenu->addAction(showGrid);
@@ -261,21 +268,14 @@ void SpreadSheet::updateStatusBar(int row, int col)
 
 void SpreadSheet::makeConnexions()
 {
-
    // --------- Connexion for the  select all action ----/
-   connect(all, &QAction::triggered,
-           spreadsheet, &QTableWidget::selectAll);
-
+   connect(all, &QAction::triggered,spreadsheet, &QTableWidget::selectAll);
    // Connection for the  show grid
-   connect(showGrid, &QAction::triggered,
-           spreadsheet, &QTableWidget::setShowGrid);
-
-   //Connection for the exit button
+   connect(showGrid, &QAction::triggered,spreadsheet, &QTableWidget::setShowGrid);
+    //Connection for the exit button
    connect(exit, &QAction::triggered, this, &SpreadSheet::close);
-
-
    //connectting the chane of any element in the spreadsheet with the update status bar
-   connect(spreadsheet, &QTableWidget::cellClicked, this,  &SpreadSheet::updateStatusBar);
+   connect(spreadsheet, &QTableWidget::cellClicked, this,&SpreadSheet::updateStatusBar);
    connect(goCell, &QAction::triggered, this, &SpreadSheet::goCellSlot);
    connect(find, &QAction::triggered, this, &SpreadSheet::goFindSlot);
    //Connexion for the saveFile
@@ -285,14 +285,16 @@ void SpreadSheet::makeConnexions()
    connect(sort, &QAction::triggered, this, &SpreadSheet::sortSlot);
    connect(row, &QAction::triggered,this,&SpreadSheet::SelectRowSlot);
    connect(Column,&QAction::triggered,this,&SpreadSheet::SelectColSlot);
-  connect(copy, &QAction::triggered,this,&SpreadSheet::copySlot);
-  connect(paste, &QAction::triggered,this,&SpreadSheet::pasteSlot);
-  connect(deleteAction,&QAction::triggered,this,&SpreadSheet::deleteSlot);
-  connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);
+   connect(copy, &QAction::triggered,this,&SpreadSheet::copySlot);
+   connect(paste, &QAction::triggered,this,&SpreadSheet::pasteSlot);
+   connect(deleteAction,&QAction::triggered,this,&SpreadSheet::deleteSlot);
+   connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);
+   connect(cut,&QAction::triggered,this,&SpreadSheet::cutSlot);
 }
 
 void SpreadSheet::saveContent(QString filename) const
 {
+
     //Gettign a pointer on the file
        QFile file(filename);
 
@@ -348,13 +350,14 @@ void SpreadSheet::goCellSlot()
 }
 void SpreadSheet::saveSlot()
 {
+
     //Creating a file dialog to choose a file graphically
         auto dialog = new QFileDialog;
 
         //Check if the current file has a name or not
         if(CurrentFile == "")
         {
-           CurrentFile = dialog->getSaveFileName();
+           CurrentFile = dialog->getSaveFileName(this, tr("Save File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
            //Update the window title with the file name
            setWindowTitle(CurrentFile);
         }
@@ -362,63 +365,97 @@ void SpreadSheet::saveSlot()
        //If we have a name simply save the content
         if( CurrentFile != "")
          {
+
                  saveContent(CurrentFile);
          }
+
 }
 void SpreadSheet::openFile(QString filename)
 {
     spreadsheet->clearContents();
-    QFile file(filename);
+    setCurrentFile(filename);
+    QString Alldata;
+    QFile importedCSV(filename);
+    QStringList rowOfData;
+    QStringList rowData;
+    Alldata.clear();
+    rowOfData.clear();
+    rowData.clear();
 
-    if(file.open(QIODevice::ReadOnly))
+if (importedCSV.open(QFile::ReadOnly))
+{
+    //Reads all data from the , and returns it as a byte array.
+    Alldata = importedCSV.readAll();
+    rowOfData = Alldata.split("\n");           //Value on each row
+    importedCSV.close();
+}
+
+for (int x = 0; x < rowOfData.size(); x++)  //rowOfData.size() gives the number of row
+{
+    rowData = rowOfData.at(x).split(",");   //Number of collumn
+
+    for (int y = 0; y < rowData.size(); y++)
     {
-      //  QTextStream stream(&file);
-        QTextStream in(&file);
-        QString line;
-        while (!in.atEnd()){
-         line = in.readLine();
-         QStringList s1 = line.split(QChar(','));
-
-         int r=s1[0].toInt();
-         int c=s1[1].toInt();
-        spreadsheet->item(r, c)->setText(s1[2]);
-
-        }
-   file.close();
+        spreadsheet->setItem(x,y,new QTableWidgetItem(rowData[y]));
     }
 }
 
-void SpreadSheet::saveAsContent(QString filename) const
+    }
+
+void SpreadSheet::saveAsContent(QString filename)
 {
     QFile file(filename);
-
-   file.rename(filename,CurrentFile);
-
+     saveContent(CurrentFile);
 
 }
 
+void SpreadSheet::updateRecentAction()
+{
+
+   QSettings settings("SpreadSheet");
+ //settings.clear();
+    //settings.setDefaultFormat(QSettings::IniFormat);
+    QStringList recentFileList = settings.value("recentFileList").toStringList();
+    int numRecentFiles = qMin(recentFileList.size(),5);
+    for(int i=0;i<numRecentFiles;i++){
+        QString text=tr("&%1 %2").arg(i+1).arg(QFileInfo(recentFileList[i]).fileName());
+
+         recentFiles[i]->setText(text);
+         recentFiles[i]->setData(recentFileList[i]);
+         recentFiles[i]->setVisible(true);
+    }
+    for(int j =numRecentFiles;j>5;j++){
+        recentFiles[j]->setVisible(false);
+    }
+}
 
 
+void SpreadSheet::setCurrentFile(const QString &filename)
+{
+
+    CurrentFile =filename;
+    setWindowTitle(tr("SpreadSheet -%1[*]").arg(QFileInfo(CurrentFile).fileName()));
+    QSettings setting("SpreadSheet");
+    setting.setDefaultFormat(QSettings::IniFormat);
+    QStringList recentfileslist =setting.value("recentFileList").toStringList();
+    recentfileslist.removeAll(filename);
+    recentfileslist.prepend(filename);
+    while(recentfileslist.size()>5){
+      recentfileslist.removeLast();
+    }
+      setting.setValue("recentFileList",recentfileslist);
+      updateRecentAction();
+
+      }
 void SpreadSheet::openSlot()
 {
-/*
+
        //Creating a file dialog to choose a file graphically
-        auto dialog = new QFileDialog(this);
-
-    //   QString file = dialog->getOpenFileName(this,"choose your file");
-
-        QString fileName = QFileDialog::getOpenFileName(this,
-            tr("Open Text file"), "");
-
-        openFile(fileName);
-*/
      QFileDialog dialog;
+     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
 
- //   QString file = dialog->getOpenFileName(this,"choose your file");
-
-     QString fileName = dialog.getOpenFileName();
-     CurrentFile = fileName;
-     openFile(fileName);
+        CurrentFile =fileName;
+        openFile(fileName);
 
 }
 
@@ -446,15 +483,6 @@ void SpreadSheet::goFindSlot()
 
 void SpreadSheet::newSlot()
 {
-    /*
-    QTableWidget *spreadsheet1 = new QTableWidget;
-    spreadsheet1->setRowCount(22);
-    spreadsheet1->setColumnCount(10);
-    spreadsheet1->setVerticalHeaderLabels({"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"});
-    setCentralWidget(spreadsheet1);
-    */
-
-     //spreadsheet->clear();
 
      Dialog4 D;
 
@@ -463,15 +491,10 @@ void SpreadSheet::newSlot()
      if(rep == QDialog::Accepted){
         saveSlot();
      }
+     //Clearing the content of spreadsheet
        spreadsheet->clear();
-
-
-
-
-
-
-
-
+       CurrentFile ="";
+        setWindowTitle("SpreadSheet");
 
 }
 
@@ -495,31 +518,23 @@ void SpreadSheet::copySlot()
 
 
 }
-//spreadsheet->item(1,2)->setText("abc");
 
-
-/*
-const QClipboard *clipboard = QApplication::clipboard();
-const QMimeData *mimeData = clipboard->mimeData();
-
- auto i =  spreadsheet->currentIndex().row();
- auto j= spreadsheet->currentIndex().column();
- auto text = QApplication::clipboard()->text();
-spreadsheet->item(i,j)->setText(text);
-*/
- /*if(mimeData->hasText()){
-    auto text = mimeData->text();
-   spreadsheet->item(i,j)->setText("abc");
-
-   }
-   */
 void SpreadSheet::pasteSlot()
 {
 
-    auto col_ =spreadsheet->currentIndex().column();
-    auto row_ =spreadsheet->currentIndex().row();
+
    auto text = QApplication::clipboard()->text();
-  spreadsheet->item(row_,col_)->setText( QApplication::clipboard()->text());
+
+     spreadsheet->setItem(spreadsheet->currentRow(),spreadsheet->currentColumn(),new QTableWidgetItem(text));
+}
+
+
+void SpreadSheet::cutSlot()
+{
+copySlot();
+deleteSlot();
+
+
 }
 
 void SpreadSheet::SelectRowSlot()
@@ -557,7 +572,7 @@ void SpreadSheet::SaveAsSlot()
        setWindowTitle(CurrentFile);
     saveAsContent(CurrentFile);
         }else{
-             CurrentFile = dialog->getSaveFileName();
+             CurrentFile = dialog->getSaveFileName(this, tr("Open File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
               saveContent(CurrentFile);
         }
 
@@ -565,6 +580,13 @@ void SpreadSheet::SaveAsSlot()
 
 void SpreadSheet::RecentFilesSlot()
 {
+    //Storing  the given object cast to type QAction if the object is of type QAction or a nullpointer otherwise
+QAction *a = qobject_cast<QAction *>(sender());
+ if(a){
+    openFile(a->data().toString());
+}
 
 }
+
+
 
