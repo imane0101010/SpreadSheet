@@ -331,7 +331,8 @@ for (int x = 0; x < rowOfData.size(); x++)
        setWindowTitle(CurrentFile);
     saveAsContent(CurrentFile);
         }else{
-             CurrentFile = dialog->getSaveFileName(this, tr("Open File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
+             CurrentFile = dialog->getSaveFileName(this, tr("Open File"),NULL,
+             "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
               saveContent(CurrentFile);
               }
 }
@@ -462,7 +463,8 @@ In order to add to the menu the 5 recent opened files,I proceded as follows:
 ```cpp
 void SpreadSheet::updateRecentAction()
 {
-  // we construct the QSettings object. The settings will be stored in a file which we named qsettingsexample.ini in the format QSettings::IniFormat.
+  // we construct the QSettings object. The settings will be stored in a file which we 
+  //named qsettingsexample.ini in the format QSettings::IniFormat.
    QSettings settings("SpreadSheet", QSettings::IniFormat);
    //
     QStringList recentFileList = settings.value("recentFileList").toStringList();
@@ -483,7 +485,8 @@ void SpreadSheet::updateRecentAction()
 ```cpp
 void SpreadSheet::RecentFilesSlot()
 {
-//sender() will get the value of the sender of the signal an return a pointer to the object that called it. qobject_cast will then use it's argument (sender()) to cast it to the specified type(QAction).
+//sender() will get the value of the sender of the signal an return a pointer to the object that called it.
+//qobject_cast will then use it's argument (sender()) to cast it to the specified type(QAction).
 QAction *a = qobject_cast<QAction *>(sender());
 //Make sure that a isn´t a nullpointer
  if(a){
