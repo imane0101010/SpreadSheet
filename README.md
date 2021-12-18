@@ -72,12 +72,12 @@ save = new QAction(saveIcon, "&Save", this);
 new = new QAction(newIcon, "&NewFile", this);
 ```
 3.Connect the action to it’s associated slot. 
-Connection for GoCell Action:
-``` cpp
 
- connect(goCell, &QAction::triggered, this, &SpreadSheet::goCellSlot);
+### Connection for GoCell Action:
+``` cpp
+connect(goCell, &QAction::triggered, this, &SpreadSheet::goCellSlot);
  ```
- It´s Slot:
+### Its Slot:
  
  ```cpp
  
@@ -107,12 +107,12 @@ void SpreadSheet::goCellSlot()
     }
 }
 ```
-Connection for Find Action: 
+### Connection for Find Action: 
 ``` cpp
 
 connect(find, &QAction::triggered, this, &SpreadSheet::goFindSlot);
 ```
-It´s Slot:
+### Its Slot:
 ``` cpp
 
 void SpreadSheet::goFindSlot()
@@ -122,32 +122,26 @@ void SpreadSheet::goFindSlot()
 
     //Executing the dialog and storing the user response
     auto rep = D.exec();
+    //Storing the content of the cell in text
     auto text = D.cell1();
     if(rep == QDialog::Accepted){
     for(int i=0;i<spreadsheet->rowCount();i++){
         for(int j=0;j<spreadsheet->columnCount();j++){
-
+        //Iterating over cells and check if the cells contains the text stored in the variable
             if(spreadsheet->item(i,j) && spreadsheet->item(i,j)->text()==text)
-            {
-                       spreadsheet->setCurrentCell(i,j);
-            }
-                 }
+                      spreadsheet->setCurrentCell(i,j):
     }
-}
-
-}
+    }
+    }
 ```
-Connection for Save Action:
+### Connection for Save Action:
 ``` cpp
-
 connect(save, &QAction::triggered, this, &SpreadSheet::saveSlot);
 ```
-It´s Slot:
+### Its Slot:
 ```cpp
-
 void SpreadSheet::saveSlot()
 {
-
     //Creating a file dialog to choose a file graphically
         auto dialog = new QFileDialog;
 
@@ -164,18 +158,13 @@ void SpreadSheet::saveSlot()
          {
                  saveContent(CurrentFile);
          }
-
-
-
 }
 ```
-Connection for NewFile Action:
+### Connection for NewFile Action:
 ``` cpp
-
 connect(newFile, &QAction::triggered, this, &SpreadSheet::newSlot);
 ```
-It´s SLot:
-
+### Its Slot:
 ``` cpp
 void SpreadSheet::newSlot()
 {
@@ -191,11 +180,11 @@ void SpreadSheet::newSlot()
         setWindowTitle("SpreadSheet");
 }
 ```
-Connection for Sort Action:
+### Connection for Sort Action:
 ``` cpp
 connect(sort, &QAction::triggered, this, &SpreadSheet::sortSlot);
 ```
-It´s Slot:
+### Its Slot:
 ``` cpp
 void SpreadSheet::sortSlot()
 {
@@ -207,41 +196,33 @@ void SpreadSheet::sortSlot()
    }
 }
 ```
-Connection for Select Row Action:
+### Connection for Select Row Action:
 ```cpp
-
 connect(row, &QAction::triggered,this,&SpreadSheet::SelectRowSlot);
 ```
-It´s Slot:
+### Its Slot:
 ``` cpp
-
 void SpreadSheet::SelectRowSlot()
 {
     spreadsheet->selectRow(spreadsheet->currentIndex().row());
 }
 ```
-Connection for Select Column Action :
+### Connection for Select Column Action :
 ``` cpp
-
 connect(Column,&QAction::triggered,this,&SpreadSheet::SelectColSlot);
 ```
-It´s slot:
-
+### Its slot:
 ``` cpp
-
 void SpreadSheet::SelectColSlot()
 {
-
     spreadsheet->selectColumn(spreadsheet->currentIndex().column());
-
 }
 ```
-Connection for Copy Action:
-
+### Connection for Copy Action:
 ``` cpp
 connect(copy, &QAction::triggered,this,&SpreadSheet::copySlot);
 ```
-It´s Slot:
+### Its Slot:
 ```cpp
 void SpreadSheet::copySlot()
 {
@@ -254,43 +235,38 @@ void SpreadSheet::copySlot()
 }
 }
 ```
-Connection of the paste Action:
+### Connection of the paste Action:
 ``` cpp
 connect(paste, &QAction::triggered,this,&SpreadSheet::pasteSlot);
 ```
-It´s Slot:
+### Its Slot:
 ```cpp
 void SpreadSheet::pasteSlot()
 {
-
-  // Store the content of the clipboard in a variable
+   // Store the content of the clipboard in a variable
    auto text = QApplication::clipboard()->text();
    // Pasting the text in the selected cell
      spreadsheet->setItem(spreadsheet->currentRow(),spreadsheet->currentColumn(),new QTableWidgetItem(text));
 }
 ```
-Connection for Delete Action:
+### Connection for Delete Action:
 ```cpp
 connect(deleteAction,&QAction::triggered,this,&SpreadSheet::deleteSlot);
 ```
-It´s Slot:
-
+### Its Slot:
 ```cpp
 void SpreadSheet::deleteSlot()
 {
-      
     auto col_ =spreadsheet->currentIndex().column();
     auto row_ =spreadsheet->currentIndex().row();
     spreadsheet->item(row_, col_)->setText("");
-
 }
 ```
-//connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);`
-Connection for Cut Action:
+### Connection for Cut Action:
 ```cpp
 connect(cut,&QAction::triggered,this,&SpreadSheet::cutSlot);
 ```
-It´s Slot:
+### Its Slot:
 
 ```cpp
 void SpreadSheet::cutSlot()
@@ -299,17 +275,15 @@ copySlot();
 deleteSlot();
 }
 ```
-Connection for OpenFile Action that can open both textfile and csv file:
+### Connection for OpenFile Action that can open both textfile and csv file:
 ```cpp
 connect(open, &QAction::triggered, this, &SpreadSheet::openSlot);
 ```
-It´s Slot:
+### Its Slot:
 ```cpp
 void SpreadSheet::openFile(QString filename)
 {
-
     setCurrentFile(filename);
-
     QString Alldata; 
     QFile importedFile(filename);
     QStringList rowOfData;
@@ -331,25 +305,21 @@ for (int x = 0; x < rowOfData.size(); x++)
 {
      //Spliting the data so as to store it in the list column by column
     rowData = rowOfData.at(x).split(",");  
-
     for (int y = 0; y < rowData.size(); y++)
     {
         //Assign each cell its correspondign value
         spreadsheet->setItem(x,y,new QTableWidgetItem(rowData[y]));
     }
 }
-
-    }
-
+}
 ```
-Connection for Save As Action:
+### Connection for Save As Action:
 ```cpp
  connect(saveAs,&QAction::triggered,this,&SpreadSheet::SaveAsSlot);
  ```
- It´s Corresponding slot:
+ ### Its Corresponding slot:
  ```cpp
- 
-void SpreadSheet::SaveAsSlot()
+ void SpreadSheet::SaveAsSlot()
 {
     auto dialog = new QFileDialog;
 
@@ -363,20 +333,17 @@ void SpreadSheet::SaveAsSlot()
         }else{
              CurrentFile = dialog->getSaveFileName(this, tr("Open File"),NULL, "TXT - Text file (*.txt);;CSV - Csv file (*.csv)");
               saveContent(CurrentFile);
-        }
-
+              }
 }
-
-``
-And for SaveAsContent method:
+```
+### And for SaveAsContent method:
 ```cpp
 void SpreadSheet::saveAsContent(QString filename)
 {
     QFile file(filename);
-     saveContent(CurrentFile);
-   
+     saveContent(CurrentFile);   
 }
-``
+```
 ## Menus
  Menus are a way to group actions. They could be as pull down menu in the menu bar or as a standalone context menu.
 In Qt, a menu regroup a set of predefined actions. The general approach for creating these menus in Qt is to::
@@ -439,7 +406,6 @@ toolbar1->addSeparator();
 ```
 ## The Status Bar
 The QStatusBar provides a horizontal bar suitable for presenting status information. A status message could be one of the following categories:
-* [x] ****
 * [x] **Temporary: briefly occupies most of the status bar. This is used to explain tooltip text and entires.**
 * [x] **Normal: occupies part of the status bar and may be hidden by temporary messages. For example, the information of page number in word.**
 * [x] **Permanant: is never hidden. Used for imporetant mode indications.**
@@ -471,7 +437,116 @@ spreadsheet->setColumnCount(10);
 ## Recent Files:
 In order to add to the menu the 5 recent opened files,I proceded as follows:
 
-*  ** 
+*  **First,let´s create 5 actions and their connection :**
+```cpp
+        //Create recentFiles QAction
+        QAction *recentFiles[5];
+      //Add recent Files to the editMenu
+     auto  recentFile = editMenu->addMenu("&Recent Files");
+     for(auto i =0 ;i<5;i++){
+         recentFiles[i] =new QAction(this);
+         //Set Visibility of 
+         recentFiles[i]->setVisible(true);
+         //Add each action to recentFiles
+         recentFile->addAction(recentFiles[i]);
+         // Make Connections
+         QObject::connect(recentFiles[i],SIGNAL(triggered()),this,SLOT(RecentFilesSlot()));
+       //Updating RecentFiles Action 
+         updateRecentAction();
+}
+```
+*  **Then,let´s implement the updateRecentAction method:**
+```cpp
+void SpreadSheet::updateRecentAction()
+{
+  // we construct the QSettings object. The settings will be stored in a file which we named qsettingsexample.ini in the format QSettings::IniFormat.
+   QSettings settings("SpreadSheet", QSettings::IniFormat);
+   //
+    QStringList recentFileList = settings.value("recentFileList").toStringList();
+    //Returns min of 5 and size of recentFilelist
+    int numRecentFiles = qMin(recentFileList.size(),5);
+    for(int i=0;i<numRecentFiles;i++){
+        QString text=tr("&%1 %2").arg(i+1).arg(QFileInfo(recentFileList[i]).fileName());
+         recentFiles[i]->setText(text);
+         recentFiles[i]->setData(recentFileList[i]);
+         recentFiles[i]->setVisible(true);
+    }
+    for(int j =numRecentFiles;j>5;j--){
+        recentFiles[j]->setVisible(false);
+    }
+}
+```
+*  **Now, we will implement the RecentFiles Slot:**
+```cpp
+void SpreadSheet::RecentFilesSlot()
+{
+//sender() will get the value of the sender of the signal an return a pointer to the object that called it. qobject_cast will then use it's argument (sender()) to cast it to the specified type(QAction).
+QAction *a = qobject_cast<QAction *>(sender());
+//Make sure that a isn´t a nullpointer
+ if(a){
+ // Open the file
+    openFile(a->data().toString());
+}
+}
+```
+### NB:
+For the dialogs used in the previous parts , we might use qt designer to create widgets,layout and slots.Personaly,I prefer creating dialogs using code.Here is a sample:
+* **Dialog 3:**
+```cpp
+    void createWidgets();
+    void placeWidgets();
+    QString cell3() const;
+    QPushButton* ok ;
+    QPushButton* cancel;
+    QLabel * col ;
+    QHBoxLayout * Hlay1 ;
+    QHBoxLayout * Hlay2 ;
+    QVBoxLayout *Layout ;
+```
+```cpp
+Implemetation of createWidget method:
+void Dialog3::createWidgets()
+{
+   ok = new QPushButton("ok");
+   cancel = new QPushButton("Cancel");
+    line = new QLineEdit();
+   col = new QLabel("Col:");
+    Hlay1 = new QHBoxLayout;
+    Hlay2 = new QHBoxLayout;
+    Layout = new QVBoxLayout;
+    HLayr = new QVBoxLayout;
+    R1 = new QRadioButton;
+    R2 =new QRadioButton;
+}
+Implementation of place Widgets method
+void Dialog3::placeWidgets()
+{
+       setLayout(Layout);
+       ok->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+       cancel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+       Hlay2->addSpacing(20);
+       Hlay1->addWidget(col);
+       Hlay1->addWidget(line);
+       R1->setText("Ascending");
+       R2->setText("Descending");
+       HLayr->addWidget(R1);
+       HLayr->addWidget(R2);
+       Hlay2->addWidget(ok);
+       Hlay2->addWidget(cancel);
+       Layout->addLayout(Hlay1);
+       Layout->addLayout(HLayr);
+       Layout->addLayout(Hlay2);
+
+}
+Creating a getter so as to have access to the private content :
+QString Dialog3::cell3() const
+{
+    return line->text();
+}
+```
+
+
+
 
 
 
