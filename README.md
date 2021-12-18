@@ -513,8 +513,9 @@ For the dialogs used in the previous parts , we might use qt designer to create 
     QHBoxLayout * Hlay2 ;
     QVBoxLayout *Layout ;
 ```
-```cpp
+
 Implemetation of createWidget method:
+```cpp
 void Dialog3::createWidgets()
 {
    ok = new QPushButton("ok");
@@ -528,7 +529,9 @@ void Dialog3::createWidgets()
     R1 = new QRadioButton;
     R2 =new QRadioButton;
 }
+```
 Implementation of place Widgets method
+```cpp
 void Dialog3::placeWidgets()
 {
        setLayout(Layout);
@@ -548,6 +551,7 @@ void Dialog3::placeWidgets()
        Layout->addLayout(Hlay2);
 
 }
+
 Creating a getter so as to have access to the private content :
 QString Dialog3::cell3() const
 {
@@ -613,7 +617,7 @@ QPlainTextEdit *textEditor;
           textEditor, &QPlainTextEdit::cut);
   connect(save, &QAction::triggered,this,&TextEditor::saveSlot);
     connect(exit, &QAction::triggered, this, &TextEditor::close);
-    ```
+  ```
   * **For the Status Bar**
 ```cpp
 connect(textEditor, SIGNAL(cursorPositionChanged()), this, SLOT(showCursorPos()));
