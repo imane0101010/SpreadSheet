@@ -1,12 +1,11 @@
-#include "spreadsheet.h"
+#include "TextEditor.h"
 
 #include <QApplication>
-#include <QStringList>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    SpreadSheet w;    
-     w.show();
-
+    TextEditor  w;
+    w.show();
     return a.exec();
 }

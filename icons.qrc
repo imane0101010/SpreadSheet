@@ -6,5 +6,9 @@
         <file>save_file.png</file>
         <file>search_icon.png</file>
         <file>go_to_icon.png</file>
+        <file>paste.png</file>
+        <file>newFile.png</file>
+        <file>cut.png</file>
+        <file>copy.png</file>
     </qresource>
 </RCC>
