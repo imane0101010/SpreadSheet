@@ -690,4 +690,4 @@ void TextEditor::openSlot(){
 
     }
 ```
-
+![image](https://github.com/imane0101010/SpreadSheet/blob/9168d405872d4d25bcd15365c38275eb44995009/TextEditor.png)
