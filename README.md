@@ -620,18 +620,18 @@ QPlainTextEdit *textEditor;
           textEditor, &QPlainTextEdit::cut);
   connect(save, &QAction::triggered,this,&TextEditor::saveSlot);
     connect(exit, &QAction::triggered, this, &TextEditor::close);
-  ```
-  * **For the Status Bar**
+    ```
+   * **For the Status Bar**
 ```cpp
 connect(textEditor, SIGNAL(cursorPositionChanged()), this, SLOT(showCursorPos()));
 ```
-Its slot:
+* **Its slot:**
 ```cpp
 void TextEditor::showCursorPos()
 {
     int line = textEditor->textCursor().blockNumber()+1;
     int pos = textEditor->textCursor().columnNumber()+1;
-    statusBar()->showMessage(QString("Ln %1, Col %2").arg(line).arg(pos));
+    statusBar()->showMessage(QString("Line %1, Col %2").arg(line).arg(pos));
 }
 ```
 * **For the Save Slot**
@@ -657,7 +657,7 @@ void TextEditor::saveSlot()
    }
 }
 ```
-Implementation of saveContent:
+* **Implementation of saveContent:**
 ```cpp
 void TextEditor::saveContent(QString Filename) const
 {
@@ -673,13 +673,21 @@ void TextEditor::saveContent(QString Filename) const
        file.close();
 }
 ```
-To open a file
+* **To open a file**
 ```cpp
-QString name = QFileDialog::getOpenFileName(this,tr("Open File"),NULL, "TXT - Text file (*.txt));
-QFile file(name);
-file.open(QFile::ReadOnly | QFile::Text);
-QTextStream ReadFile(&file);
-textEditor->setText(ReadFile.readAll())
-}
+void TextEditor::openSlot(){
+    QString name = QFileDialog::getOpenFileName(this,tr("Open File"),NULL,"TXT - Text file (*.txt)");
+    QString filecontent;
+    QFile file(name);
+    file.open(QFile::ReadOnly | QFile::Text);
+   // QTextStream ReadFile(&file);
+    QTextStream in(&file);
+    filecontent= in.readAll();
+
+    textEditor->clear();
+    textEditor->setPlainText(filecontent);
+       file.close();
+
+    }
 ```
 
